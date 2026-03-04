@@ -3,7 +3,7 @@
 // ============================================
 
 import * as Tone from 'tone';
-import { SYNTH_CONFIG, DEFAULT_VOLUME } from '@/constants/config';
+import { DEFAULT_VOLUME } from '@/constants/config';
 
 // ============================================
 // 合成器实例
@@ -11,6 +11,7 @@ import { SYNTH_CONFIG, DEFAULT_VOLUME } from '@/constants/config';
 
 let kickSynth: Tone.MembraneSynth | null = null;
 let snareSynth: Tone.NoiseSynth | null = null;
+let snareToneSynth: Tone.MembraneSynth | null = null;
 let hihatSynth: Tone.MetalSynth | null = null;
 let drumBus: Tone.Volume | null = null;
 
@@ -22,34 +23,61 @@ export function initDrumSynths(): void {
   // 创建总线用于统一控制音量
   drumBus = new Tone.Volume(DEFAULT_VOLUME.drum).toDestination();
 
-  // Kick - 底鼓 (MembraneSynth 模拟鼓皮振动)
+  // Kick - 底鼓
   kickSynth = new Tone.MembraneSynth({
-    pitchDecay: SYNTH_CONFIG.kick.pitchDecay,
-    octaves: SYNTH_CONFIG.kick.octaves,
-    oscillator: SYNTH_CONFIG.kick.oscillator as { type: 'sine' | 'square' | 'sawtooth' | 'triangle' },
-    envelope: SYNTH_CONFIG.kick.envelope,
+    pitchDecay: 0.05,
+    octaves: 10,
+    oscillator: { type: 'sine' },
+    envelope: {
+      attack: 0.001,
+      decay: 0.4,
+      sustain: 0.01,
+      release: 1.4,
+    },
   }).connect(drumBus);
-
-  // Snare - 军鼓 (NoiseSynth 模拟噪声)
-  snareSynth = new Tone.NoiseSynth({
-    noise: SYNTH_CONFIG.snare.noise,
-    envelope: SYNTH_CONFIG.snare.envelope,
-  }).connect(drumBus);
-
-  // Hi-Hat - 踩镲 (MetalSynth 模拟金属质感)
-  hihatSynth = new Tone.MetalSynth({
-    envelope: SYNTH_CONFIG.hihat.envelope,
-    harmonicity: SYNTH_CONFIG.hihat.harmonicity,
-    modulationIndex: SYNTH_CONFIG.hihat.modulationIndex,
-    resonance: SYNTH_CONFIG.hihat.resonance,
-    octaves: SYNTH_CONFIG.hihat.octaves,
-  }).connect(drumBus);
-  hihatSynth.frequency.value = 200;
-
-  // 设置初始音量
   kickSynth.volume.value = 0;
-  snareSynth.volume.value = -5;
-  hihatSynth.volume.value = -10;
+
+  // Snare - 军鼓 (噪声层)
+  snareSynth = new Tone.NoiseSynth({
+    noise: { type: 'white' },
+    envelope: {
+      attack: 0.005,
+      decay: 0.2,
+      sustain: 0,
+      release: 0.1,
+    },
+  }).connect(drumBus);
+  snareSynth.volume.value = -3;
+
+  // Snare - 军鼓 (音调层)
+  snareToneSynth = new Tone.MembraneSynth({
+    pitchDecay: 0.02,
+    octaves: 4,
+    oscillator: { type: 'triangle' },
+    envelope: {
+      attack: 0.001,
+      decay: 0.1,
+      sustain: 0,
+      release: 0.1,
+    },
+  }).connect(drumBus);
+  snareToneSynth.volume.value = -10;
+
+  // Hi-Hat - 踩镲
+  // MetalSynth 参数调整：更高的频率和共振
+  hihatSynth = new Tone.MetalSynth({
+    envelope: {
+      attack: 0.001,
+      decay: 0.08,
+      release: 0.02,
+    },
+    harmonicity: 12,
+    modulationIndex: 20,
+    resonance: 8000,
+    octaves: 2,
+  }).connect(drumBus);
+  hihatSynth.frequency.value = 800;  // 设置基础频率
+  hihatSynth.volume.value = -6;
 }
 
 // ============================================
@@ -58,7 +86,6 @@ export function initDrumSynths(): void {
 
 export function triggerKick(time?: number): void {
   if (!kickSynth) return;
-  // C1 = 32.70 Hz，标准底鼓音高
   if (time !== undefined) {
     kickSynth.triggerAttackRelease('C1', '8n', time);
   } else {
@@ -67,17 +94,26 @@ export function triggerKick(time?: number): void {
 }
 
 export function triggerSnare(time?: number): void {
-  if (!snareSynth) return;
-  snareSynth.triggerAttackRelease('8n', time);
+  if (!snareSynth || !snareToneSynth) return;
+  
+  if (time !== undefined) {
+    snareSynth.triggerAttackRelease('8n', time);
+    snareToneSynth.triggerAttackRelease('G2', '16n', time);
+  } else {
+    snareSynth.triggerAttackRelease('8n');
+    snareToneSynth.triggerAttackRelease('G2', '16n');
+  }
 }
 
 export function triggerHiHat(time?: number): void {
   if (!hihatSynth) return;
-  // 踩镲音量稍小
+  
+  // MetalSynth.triggerAttackRelease(duration, time?, velocity?)
+  // 注意：MetalSynth 不需要 note 参数，音高由 frequency 设置
   if (time !== undefined) {
-    hihatSynth.triggerAttackRelease('32n', time, 0.3);
+    hihatSynth.triggerAttackRelease('32n', time, 0.8);
   } else {
-    hihatSynth.triggerAttackRelease('32n', Tone.now(), 0.3);
+    hihatSynth.triggerAttackRelease('32n', Tone.now(), 0.8);
   }
 }
 
@@ -104,11 +140,13 @@ export function setDrumVolume(volume: number): void {
 export function disposeDrumSynths(): void {
   kickSynth?.dispose();
   snareSynth?.dispose();
+  snareToneSynth?.dispose();
   hihatSynth?.dispose();
   drumBus?.dispose();
   
   kickSynth = null;
   snareSynth = null;
+  snareToneSynth = null;
   hihatSynth = null;
   drumBus = null;
 }

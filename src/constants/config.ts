@@ -20,15 +20,29 @@ export const DEFAULT_PATTERN: DrumPattern = {
 /** Backing Track 列表 */
 export const BACKING_TRACKS: BackingTrack[] = [
   {
+    id: 'metal-120',
+    name: 'Metal Groove',
+    bpm: 120,
+    url: '/tracks/metal-120.mp3',
+    genre: 'metal',
+  },
+  {
     id: 'metal-140',
-    name: 'Heavy Metal Riff',
+    name: 'Heavy Riff',
     bpm: 140,
     url: '/tracks/metal-140.mp3',
     genre: 'metal',
   },
   {
+    id: 'rock-100',
+    name: 'Classic Rock',
+    bpm: 100,
+    url: '/tracks/rock-100.mp3',
+    genre: 'rock',
+  },
+  {
     id: 'rock-120',
-    name: 'Hard Rock Groove',
+    name: 'Hard Rock',
     bpm: 120,
     url: '/tracks/rock-120.mp3',
     genre: 'rock',
@@ -44,6 +58,18 @@ export const BACKING_TRACKS: BackingTrack[] = [
 
 /** 默认曲目 */
 export const DEFAULT_TRACK = BACKING_TRACKS[0];
+
+/** 按 Genre 分组的曲目 */
+export const TRACKS_BY_GENRE = {
+  metal: BACKING_TRACKS.filter(t => t.genre === 'metal'),
+  rock: BACKING_TRACKS.filter(t => t.genre === 'rock'),
+};
+
+/** Genre 选项 */
+export const GENRES = [
+  { id: 'metal', name: 'Metal', icon: '🤘' },
+  { id: 'rock', name: 'Rock', icon: '🎸' },
+] as const;
 
 /** 合成器配置 */
 export const SYNTH_CONFIG: SynthConfig = {
@@ -62,7 +88,7 @@ export const SYNTH_CONFIG: SynthConfig = {
     noise: { type: 'white' },
     envelope: {
       attack: 0.005,
-      decay: 0.1,
+      decay: 0.2,
       sustain: 0,
       release: 0.1,
     },
@@ -70,25 +96,26 @@ export const SYNTH_CONFIG: SynthConfig = {
   hihat: {
     envelope: {
       attack: 0.001,
-      decay: 0.05,
-      release: 0.01,
+      decay: 0.08,
+      release: 0.02,
     },
-    harmonicity: 5.1,
-    modulationIndex: 32,
-    resonance: 4000,
-    octaves: 1.5,
+    harmonicity: 12,
+    modulationIndex: 20,
+    resonance: 8000,
+    octaves: 2,
   },
 };
 
 /** 音量默认值 */
 export const DEFAULT_VOLUME = {
-  master: -10, // dB
-  drum: -5,    // dB
-  backing: -12, // dB
+  master: -10,  // dB
+  drum: -5,     // dB
+  backing: -8,  // dB
 };
 
 /** 本地存储键名 */
 export const STORAGE_KEYS = {
   pattern: 'justbeat_pattern',
   muted: 'justbeat_muted',
+  genre: 'justbeat_genre',
 };

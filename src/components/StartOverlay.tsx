@@ -32,7 +32,7 @@ export function StartOverlay({ onStart }: StartOverlayProps) {
           <span className="text-white">Beat</span>
         </h2>
         <p className="text-gray-400 mb-8 text-sm">
-          点击开始你的节奏创作之旅
+          调到合适音量，准备！
         </p>
         <button
           onClick={handleClick}
@@ -47,7 +47,7 @@ export function StartOverlay({ onStart }: StartOverlayProps) {
             disabled:hover:scale-100
           "
         >
-          {isStarting ? '启动中...' : '点击开始'}
+          {isStarting ? '启动中...' : '开始'}
         </button>
       </div>
     </div>

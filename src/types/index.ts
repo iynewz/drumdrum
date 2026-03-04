@@ -15,13 +15,16 @@ export interface DrumPattern {
 /** 音色类型 */
 export type DrumType = 'kick' | 'snare' | 'hihat';
 
+/** 音乐风格 */
+export type Genre = 'metal' | 'rock';
+
 /** Backing Track 定义 */
 export interface BackingTrack {
   id: string;
   name: string;
   bpm: number;
   url: string;
-  genre: 'metal' | 'rock';
+  genre: Genre;
 }
 
 /** 音频配置 */
@@ -40,6 +43,8 @@ export interface DrumMachineState {
   isMuted: boolean;
   currentStep: number;
   bpm: number;
+  currentTrack: BackingTrack;
+  genre: Genre;
 }
 
 /** Drum Machine Action */
@@ -49,7 +54,10 @@ export type DrumMachineAction =
   | { type: 'SET_MUTED'; isMuted: boolean }
   | { type: 'SET_CURRENT_STEP'; step: number }
   | { type: 'CLEAR_ALL' }
-  | { type: 'RANDOMIZE' };
+  | { type: 'RANDOMIZE' }
+  | { type: 'SET_TRACK'; track: BackingTrack }
+  | { type: 'SET_GENRE'; genre: Genre; track: BackingTrack }
+  | { type: 'SET_BPM'; bpm: number };
 
 /** 合成器配置 */
 export interface SynthConfig {

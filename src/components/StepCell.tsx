@@ -21,18 +21,15 @@ const DRUM_LABELS: Record<DrumType, string> = {
 };
 
 // 鼓类型颜色
-const DRUM_COLORS: Record<DrumType, { active: string; current: string }> = {
+const DRUM_COLORS: Record<DrumType, { active: string }> = {
   kick: {
     active: 'bg-neon-green shadow-[0_0_10px_rgba(0,255,136,0.5)]',
-    current: 'border-neon-green',
   },
   snare: {
     active: 'bg-neon-orange shadow-[0_0_10px_rgba(255,107,53,0.5)]',
-    current: 'border-neon-orange',
   },
   hihat: {
     active: 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]',
-    current: 'border-yellow-400',
   },
 };
 
@@ -48,19 +45,19 @@ export const StepCell = memo(function StepCell({
   // 计算样式
   const baseClasses = `
     relative w-full aspect-square rounded-md
-    border-2 transition-all duration-100
+    border-2 transition-all duration-75
     flex items-center justify-center
     text-xs font-bold select-none
   `;
   
+  // 激活状态
   const stateClasses = isActive
-    ? `${colors.active} text-industrial-900 border-transparent`
-    : 'bg-industrial-600 border-industrial-500 text-gray-600 hover:bg-industrial-500';
+    ? `${colors.active} text-industrial-900 border-transparent scale-95`
+    : 'bg-industrial-600 border-industrial-500 text-gray-600 hover:bg-industrial-500 hover:border-industrial-400';
   
-  const currentClasses = isCurrent
-    ? isActive
-      ? 'ring-2 ring-white ring-offset-2 ring-offset-industrial-700'
-      : `${colors.current} border-opacity-100`
+  // 当前步：轻微高亮边框（扫描线提供主要视觉反馈）
+  const currentClasses = isCurrent && !isActive
+    ? 'border-neon-orange/50 bg-industrial-500/50'
     : '';
 
   // 只在每组的第一个显示数字 (0, 4, 8, 12)
@@ -76,7 +73,7 @@ export const StepCell = memo(function StepCell({
     >
       {/* 每组的第一个显示数字 1, 2, 3, 4 */}
       {showBeatNumber && drumType === 'kick' && (
-        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 font-bold">
+        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 font-bold">
           {beatNumber}
         </span>
       )}

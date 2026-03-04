@@ -4,6 +4,7 @@
 
 import { useDrumMachine } from '@/context/DrumMachineContext';
 import { useDrumMachine as useDrumMachineControl } from '@/hooks/useDrumMachine';
+import { GenreSelector } from './GenreSelector';
 
 export function TransportControls() {
   const { state, setPlaying, clearAll, randomize } = useDrumMachine();
@@ -21,7 +22,7 @@ export function TransportControls() {
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 flex-wrap">
       {/* 播放/暂停按钮 */}
       <button
         onClick={handlePlayClick}
@@ -64,6 +65,11 @@ export function TransportControls() {
       >
         Random
       </button>
+
+      {/* Genre 选择器 */}
+      <div className="ml-2 border-l border-industrial-500 pl-3">
+        <GenreSelector />
+      </div>
     </div>
   );
 }

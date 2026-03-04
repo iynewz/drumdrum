@@ -6,10 +6,12 @@ import { createContext, useContext, useReducer, useCallback, useRef, useState, R
 import type { 
   DrumType, 
   DrumMachineState, 
-  DrumMachineAction 
+  DrumMachineAction,
+  BackingTrack,
+  Genre
 } from '@/types';
-import { DEFAULT_PATTERN, DEFAULT_BPM, STEPS } from '@/constants/config';
-import { initDrumSynths, triggerKick, triggerSnare, triggerHiHat } from '@/audio/drumSynths';
+import { DEFAULT_PATTERN, STEPS, DEFAULT_TRACK } from '@/constants/config';
+import { initDrumSynths } from '@/audio/drumSynths';
 import * as Tone from 'tone';
 
 // ============================================
@@ -20,8 +22,10 @@ const initialState: DrumMachineState = {
   pattern: DEFAULT_PATTERN,
   isPlaying: false,
   isMuted: false,
-  currentStep: 0,
-  bpm: DEFAULT_BPM,
+  currentStep: -1,
+  bpm: DEFAULT_TRACK.bpm,
+  currentTrack: DEFAULT_TRACK,
+  genre: DEFAULT_TRACK.genre,
 };
 
 // ============================================
@@ -47,6 +51,24 @@ function drumMachineReducer(state: DrumMachineState, action: DrumMachineAction):
     case 'SET_CURRENT_STEP':
       return { ...state, currentStep: action.step };
 
+    case 'SET_TRACK':
+      return { 
+        ...state, 
+        currentTrack: action.track,
+        bpm: action.track.bpm,
+      };
+
+    case 'SET_GENRE':
+      return {
+        ...state,
+        genre: action.genre,
+        currentTrack: action.track,
+        bpm: action.track.bpm,
+      };
+
+    case 'SET_BPM':
+      return { ...state, bpm: action.bpm };
+
     case 'CLEAR_ALL':
       return {
         ...state,
@@ -66,9 +88,9 @@ function drumMachineReducer(state: DrumMachineState, action: DrumMachineAction):
       return {
         ...state,
         pattern: {
-          kick: randomPattern(0.25),  // 25% 密度
+          kick: randomPattern(0.25),
           snare: randomPattern(0.25),
-          hihat: randomPattern(0.5),  // 50% 密度
+          hihat: randomPattern(0.5),
         },
       };
     }
@@ -88,6 +110,8 @@ interface DrumMachineContextType {
   setPlaying: (isPlaying: boolean) => void;
   setMuted: (isMuted: boolean) => void;
   setCurrentStep: (step: number) => void;
+  setTrack: (track: BackingTrack) => void;
+  setGenre: (genre: Genre, track: BackingTrack) => void;
   clearAll: () => void;
   randomize: () => void;
   initAudio: () => Promise<void>;
@@ -121,21 +145,6 @@ export function DrumMachineProvider({ children }: DrumMachineProviderProps) {
 
   const toggleStep = useCallback((drumType: DrumType, step: number) => {
     dispatch({ type: 'TOGGLE_STEP', drumType, step });
-    
-    // 即时预览声音（如果音频已初始化）
-    if (audioInitializedRef.current) {
-      switch (drumType) {
-        case 'kick':
-          triggerKick();
-          break;
-        case 'snare':
-          triggerSnare();
-          break;
-        case 'hihat':
-          triggerHiHat();
-          break;
-      }
-    }
   }, []);
 
   const setPlaying = useCallback((isPlaying: boolean) => {
@@ -148,6 +157,14 @@ export function DrumMachineProvider({ children }: DrumMachineProviderProps) {
 
   const setCurrentStep = useCallback((step: number) => {
     dispatch({ type: 'SET_CURRENT_STEP', step });
+  }, []);
+
+  const setTrack = useCallback((track: BackingTrack) => {
+    dispatch({ type: 'SET_TRACK', track });
+  }, []);
+
+  const setGenre = useCallback((genre: Genre, track: BackingTrack) => {
+    dispatch({ type: 'SET_GENRE', genre, track });
   }, []);
 
   const clearAll = useCallback(() => {
@@ -164,6 +181,8 @@ export function DrumMachineProvider({ children }: DrumMachineProviderProps) {
     setPlaying,
     setMuted,
     setCurrentStep,
+    setTrack,
+    setGenre,
     clearAll,
     randomize,
     initAudio,

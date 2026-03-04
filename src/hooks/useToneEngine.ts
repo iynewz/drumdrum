@@ -2,7 +2,7 @@
 // justBeat - Tone.js 引擎管理 Hook
 // ============================================
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import * as Tone from 'tone';
 import type { DrumPattern } from '@/types';
 import { 
@@ -47,6 +47,12 @@ export function useToneEngine(options: UseToneEngineOptions): UseToneEngineRetur
   // 初始化 Sequence (当音频准备好后)
   // ============================================
   
+  // 使用 ref 存储 onStep 回调，避免依赖变化导致重建 sequence
+  const onStepRef = useRef(onStep);
+  useEffect(() => {
+    onStepRef.current = onStep;
+  }, [onStep]);
+  
   useEffect(() => {
     if (!isAudioReady || initializedRef.current) return;
     
@@ -68,9 +74,9 @@ export function useToneEngine(options: UseToneEngineOptions): UseToneEngineRetur
         }
         
         // 同步更新 UI (使用 Tone.Draw 确保与音频同步)
-        if (onStep) {
+        if (onStepRef.current) {
           Tone.Draw.schedule(() => {
-            onStep(step);
+            onStepRef.current?.(step);
           }, time);
         }
       },
@@ -82,35 +88,39 @@ export function useToneEngine(options: UseToneEngineOptions): UseToneEngineRetur
     sequenceRef.current = sequence;
     initializedRef.current = true;
     
+    console.log('[ToneEngine] Sequence initialized, BPM:', bpm);
+    
     return () => {
       sequence.dispose();
       sequenceRef.current = null;
       initializedRef.current = false;
     };
-  }, [isAudioReady, bpm, onStep]);
+  }, [isAudioReady, bpm]);
 
   // ============================================
   // 播放控制
   // ============================================
   
   const start = useCallback(() => {
-    if (!initializedRef.current) return;
+    if (!initializedRef.current) {
+      console.warn('[ToneEngine] Cannot start: not initialized');
+      return;
+    }
     
-    Tone.Transport.start();
+    console.log('[ToneEngine] Drum sequence ready');
     setIsPlaying(true);
   }, []);
 
   const stop = useCallback(() => {
     if (!initializedRef.current) return;
     
-    Tone.Transport.stop();
     setIsPlaying(false);
     
-    // 重置 step 显示
-    if (onStep) {
-      onStep(-1);
+    // 重置 step 显示 (使用 ref 获取最新回调)
+    if (onStepRef.current) {
+      onStepRef.current(-1);
     }
-  }, [onStep]);
+  }, []);
 
   // ============================================
   // 静音控制
@@ -134,10 +144,19 @@ export function useToneEngine(options: UseToneEngineOptions): UseToneEngineRetur
   
   useEffect(() => {
     return () => {
-      stop();
+      // 组件卸载时停止并清理
+      if (initializedRef.current) {
+        Tone.Transport.stop();
+        setIsPlaying(false);
+        if (onStepRef.current) {
+          onStepRef.current(-1);
+        }
+      }
       disposeDrumSynths();
     };
-  }, [stop]);
+    // 故意不依赖 stop，避免循环
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // BPM 变化时更新
   useEffect(() => {
@@ -146,11 +165,14 @@ export function useToneEngine(options: UseToneEngineOptions): UseToneEngineRetur
     }
   }, [bpm]);
 
-  return {
+  // ============================================
+  // 稳定返回对象引用
+  // ============================================
+  return useMemo(() => ({
     isPlaying,
     start,
     stop,
     setMuted,
     updatePattern,
-  };
+  }), [isPlaying, start, stop, setMuted, updatePattern]);
 }
