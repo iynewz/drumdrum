@@ -2,8 +2,8 @@
 // justBeat - 鼓声音色合成配置
 // ============================================
 
-import * as Tone from 'tone';
-import { DEFAULT_VOLUME } from '@/constants/config';
+import * as Tone from "tone";
+import { DEFAULT_VOLUME } from "@/constants/config";
 
 // ============================================
 // 合成器实例
@@ -27,7 +27,7 @@ export function initDrumSynths(): void {
   kickSynth = new Tone.MembraneSynth({
     pitchDecay: 0.05,
     octaves: 10,
-    oscillator: { type: 'sine' },
+    oscillator: { type: "sine" },
     envelope: {
       attack: 0.001,
       decay: 0.4,
@@ -39,7 +39,7 @@ export function initDrumSynths(): void {
 
   // Snare - 军鼓 (噪声层)
   snareSynth = new Tone.NoiseSynth({
-    noise: { type: 'white' },
+    noise: { type: "white" },
     envelope: {
       attack: 0.005,
       decay: 0.2,
@@ -53,7 +53,7 @@ export function initDrumSynths(): void {
   snareToneSynth = new Tone.MembraneSynth({
     pitchDecay: 0.02,
     octaves: 4,
-    oscillator: { type: 'triangle' },
+    oscillator: { type: "triangle" },
     envelope: {
       attack: 0.001,
       decay: 0.1,
@@ -76,7 +76,7 @@ export function initDrumSynths(): void {
     resonance: 8000,
     octaves: 2,
   }).connect(drumBus);
-  hihatSynth.frequency.value = 800;  // 设置基础频率
+  hihatSynth.frequency.value = 800; // 设置基础频率
   hihatSynth.volume.value = -6;
 }
 
@@ -85,35 +85,38 @@ export function initDrumSynths(): void {
 // ============================================
 
 export function triggerKick(time?: number): void {
+  console.log(`trigger kick at ${time || "now"}`);
+
   if (!kickSynth) return;
   if (time !== undefined) {
-    kickSynth.triggerAttackRelease('C1', '8n', time);
+    kickSynth.triggerAttackRelease("C1", "8n", time); 
   } else {
-    kickSynth.triggerAttackRelease('C1', '8n');
+    kickSynth.triggerAttackRelease("C1", "8n");
   }
 }
 
 export function triggerSnare(time?: number): void {
   if (!snareSynth || !snareToneSynth) return;
-  
+
   if (time !== undefined) {
-    snareSynth.triggerAttackRelease('8n', time);
-    snareToneSynth.triggerAttackRelease('G2', '16n', time);
+    snareSynth.triggerAttackRelease("8n", time);
+    snareToneSynth.triggerAttackRelease("G2", "16n", time);
   } else {
-    snareSynth.triggerAttackRelease('8n');
-    snareToneSynth.triggerAttackRelease('G2', '16n');
+    snareSynth.triggerAttackRelease("8n");
+    snareToneSynth.triggerAttackRelease("G2", "16n");
   }
 }
 
 export function triggerHiHat(time?: number): void {
+  console.log("trigger hh"); //
   if (!hihatSynth) return;
-  
+
   // MetalSynth.triggerAttackRelease(duration, time?, velocity?)
   // 注意：MetalSynth 不需要 note 参数，音高由 frequency 设置
   if (time !== undefined) {
-    hihatSynth.triggerAttackRelease('32n', time, 0.8);
+    hihatSynth.triggerAttackRelease("32n", time, 0.8);
   } else {
-    hihatSynth.triggerAttackRelease('32n', Tone.now(), 0.8);
+    hihatSynth.triggerAttackRelease("32n", Tone.now(), 0.8);
   }
 }
 
@@ -143,7 +146,7 @@ export function disposeDrumSynths(): void {
   snareToneSynth?.dispose();
   hihatSynth?.dispose();
   drumBus?.dispose();
-  
+
   kickSynth = null;
   snareSynth = null;
   snareToneSynth = null;
