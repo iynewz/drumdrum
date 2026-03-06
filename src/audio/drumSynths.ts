@@ -76,8 +76,7 @@ export function initDrumSynths(): void {
     resonance: 8000,
     octaves: 2,
   }).connect(drumBus);
-  hihatSynth.frequency.value = 800; // 设置基础频率
-  hihatSynth.volume.value = -6;
+  hihatSynth.volume.value = -5;
 }
 
 // ============================================
@@ -89,7 +88,7 @@ export function triggerKick(time?: number): void {
 
   if (!kickSynth) return;
   if (time !== undefined) {
-    kickSynth.triggerAttackRelease("C1", "8n", time); 
+    kickSynth.triggerAttackRelease("C1", "8n", time);
   } else {
     kickSynth.triggerAttackRelease("C1", "8n");
   }
@@ -108,15 +107,12 @@ export function triggerSnare(time?: number): void {
 }
 
 export function triggerHiHat(time?: number): void {
-  console.log("trigger hh"); //
   if (!hihatSynth) return;
 
-  // MetalSynth.triggerAttackRelease(duration, time?, velocity?)
-  // 注意：MetalSynth 不需要 note 参数，音高由 frequency 设置
   if (time !== undefined) {
-    hihatSynth.triggerAttackRelease("32n", time, 0.8);
+    hihatSynth.triggerAttackRelease("C7", "32n", time, 0.8);
   } else {
-    hihatSynth.triggerAttackRelease("32n", Tone.now(), 0.8);
+    hihatSynth.triggerAttackRelease("C7", "32n", Tone.now(), 0.8);
   }
 }
 

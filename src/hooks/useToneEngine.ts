@@ -72,7 +72,6 @@ export function useToneEngine(
           triggerSnare(time);
         }
         if (patternRef.current.hihat[step]) {
-          console.log("Trigger hihat outside");
           triggerHiHat(time);
         }
 
