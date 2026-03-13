@@ -73,7 +73,7 @@ export function useDrumMachine() {
         loop: true,
         autostart: false,
         volume: -8,
-      });
+      }).toDestination();
 
       // 等待这个特定 player 加载完成
       await player.load(track.url);

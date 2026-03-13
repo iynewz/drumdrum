@@ -1,6 +1,6 @@
 # justBeat 开发 TODO List
 
-> 基于 PRD 拆解的开发任务清单
+> 基于 PRD v2.0 拆解的开发任务清单
 
 ---
 
@@ -49,6 +49,7 @@
 - [x] 使用 Tone.Player 加载音频
 - [x] 与 Tone.Transport 同步
 - [x] 点击开始后自动播放
+- [x] Player 连接到 Tone.Destination（修复无声 bug）
 
 ### 3.3 Genre 选择器 ✅
 - [x] Metal / Rock 切换按钮
@@ -81,76 +82,119 @@
 
 ---
 
-## Phase 5: 集成与优化 🚧 进行中
+## Phase 5: Bug 修复与稳定性 ✅ 已完成
 
-### 5.1 功能集成 ✅
-- [x] Backing Track 与 Drum Machine 自动同步
-- [x] 页面加载后自动播放 Backing Track
-- [x] Genre 切换功能
+- [x] 修复 Backing Track 无声（Player 缺少 `.toDestination()`）
+- [x] 修复点击开始后不播放（React stale closure）
+- [x] 修复 Hi-Hat 音色异常（MetalSynth 参数调整）
+- [x] 修复 Sequence 不应依赖 BPM 重建
 
-### 5.2 性能优化
+---
+
+## Phase 6: 补齐内容 🚨 最高优先级
+
+> 当前只有 `metal-120.mp3` 一首可用，config 中其他 4 首会 404。这是可玩性的最大瓶颈。
+
+### 6.1 Backing Track 素材
+
+**获取方式 A：AI 生成（推荐）**
+
+使用 AI 音乐生成服务，用 prompt 生成无鼓伴奏，可控性强：
+
+| 服务 | 说明 |
+|------|------|
+| Suno API | prompt 如 `"instrumental metal, no drums, heavy distorted guitar riffs, 140 bpm, loop-friendly"`，生成质量高 |
+| Udio | 类似 Suno，音乐质量好 |
+| Replicate (MusicGen) | Meta 开源模型，可通过 API 调用，可控性最强 |
+
+- [ ] 选定一个 AI 音乐生成服务并获取 API key
+- [ ] 编写生成脚本（提供 API key 后可自动化）
+- [ ] 生成 metal-140 (140 BPM)
+- [ ] 生成 metal-160 (160 BPM)
+- [ ] 生成 rock-100 (100 BPM)
+- [ ] 生成 rock-120 (120 BPM)
+
+**获取方式 B：免费素材站手动下载**
+
+| 来源 | 说明 |
+|------|------|
+| YouTube | 搜 "drumless metal backing track"，用 yt-dlp 下载 |
+| Freesound.org | CC 协议素材，可商用 |
+| Looperman.com | 免费循环素材 |
+
+- [ ] 下载素材并转换为 mp3 格式
+- [ ] 确认 BPM 准确（可用 Audacity 或在线 BPM 检测工具）
+- [ ] 文件命名为 `{genre}-{bpm}.mp3` 放入 `/tracks/`
+
+**最终验证**
+- [ ] 准备 metal-140.mp3 (Heavy Riff, 140 BPM)
+- [ ] 准备 metal-160.mp3 (Fast Thrash, 160 BPM)
+- [ ] 准备 rock-100.mp3 (Classic Rock, 100 BPM)
+- [ ] 准备 rock-120.mp3 (Hard Rock, 120 BPM)
+- [ ] 验证所有曲目可正常加载播放
+
+### 6.2 预设 Pattern
+- [ ] 实现 Preset 选择功能（UI + 状态）
+- [ ] Basic Rock：Kick 1,5 + Snare 5,13 + HH 每步
+- [ ] Metal Drive：双踩底鼓 + 反拍军鼓
+- [ ] Blast Beat：全部填满
+- [ ] Syncopated：切分节奏
+
+---
+
+## Phase 7: 体验优化
+
+### 7.1 新手引导
+- [ ] 首次访问时 UI 提示 "Try clicking on Snare row!"
+- [ ] 引导动画或高亮提示
+
+### 7.2 性能优化
 - [ ] 音频节点复用
 - [ ] React 渲染优化 (memo/useMemo)
 - [ ] 资源预加载
 
-### 5.3 错误处理
+### 7.3 错误处理
 - [x] 音频上下文被阻止的处理
-- [ ] 音频文件加载失败处理
+- [ ] 音频文件加载失败处理（友好提示）
 - [ ] 浏览器兼容性处理
 
----
-
-## Phase 6: 测试与发布
-
-### 6.1 功能测试 🚧
-- [x] 点击网格添加鼓点并在循环中发声
-- [ ] HH 声音测试确认
-- [x] Drum Machine 播放/停止
-- [x] Backing Track 自动播放
-- [x] Genre 切换
-- [x] Mute 功能
-- [x] 扫描线显示
-- [ ] 长时间播放无错位
-- [ ] 多浏览器测试 (Chrome, Firefox, Safari)
-
-### 6.2 用户体验优化
-- [x] 首次加载提示
-- [x] 当前曲目信息显示
-- [x] Genre 选择器
-
-### 6.3 构建与部署
+### 7.4 构建与部署
 - [x] 生产构建配置
 - [ ] 静态资源优化
 - [ ] 部署到 Vercel/Netlify
 
 ---
 
-## Phase 7: 后续功能 (Backlog)
+## Phase 8: 社交与传播
 
-### 7.1 播放控制增强 ✅
-- [x] Play/Stop 按钮
-- [x] Clear All 按钮
-- [x] 随机生成节拍按钮
-- [x] Genre 切换
+### 8.1 URL 分享
+- [ ] Pattern 编码为 hex 字符串（3×16 = 48 bool → 6 字节）
+- [ ] 写入 URL hash（如 `#p=a3f0c1b2e4d5`）
+- [ ] 页面加载时解析 URL 恢复 pattern
+- [ ] "复制链接"按钮
 
-### 7.2 新手引导
-- [ ] UI 提示 "Try clicking on Snare row!"
-- [ ] 首次访问引导动画
+### 8.2 录音导出
+- [ ] 使用 Tone.Recorder 录制一段循环
+- [ ] 导出为 WAV/MP3 下载
 
-### 7.3 更多音色
+---
+
+## Phase 9: 丰富创作空间 (Backlog)
+
+### 9.1 更多音色
 - [ ] Tom (桶鼓)
 - [ ] Crash (碎音镲)
 - [ ] Open Hi-Hat (开镲)
 
-### 7.4 分享功能
-- [ ] Pattern 编码/解码
-- [ ] URL 参数读取/写入
-- [ ] 复制分享链接
+### 9.2 曲目扩展
+- [ ] 更多 Genre：Djent, Thrash, Prog Metal, Punk
+- [ ] 用户上传自己的 Backing Track
+- [ ] 曲目选择器 UI 优化
 
-### 7.5 曲目扩展
-- [ ] 添加更多 Backing Track
-- [ ] 曲目选择器 (在当前 genre 内切换不同曲目)
-- [ ] 用户上传支持
+### 9.3 远期愿景
+- [ ] 社区作品广场
+- [ ] AI 推荐鼓点 pattern
+- [ ] 多人实时 Jam
 
 ---
 
@@ -183,6 +227,6 @@ export const BACKING_TRACKS: BackingTrack[] = [
 
 ---
 
-*创建日期: 2026-03-04*  
-*最后更新: 2026-03-04*  
-*当前阶段: Phase 5-6 (集成优化与测试)*
+*创建日期: 2026-03-04*
+*最后更新: 2026-03-13*
+*当前阶段: Phase 6 (补齐内容)*

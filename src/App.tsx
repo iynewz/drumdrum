@@ -2,7 +2,7 @@
 // justBeat - 主应用组件
 // ============================================
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { DrumMachineProvider } from '@/context/DrumMachineContext';
 import { DrumGrid } from '@/components/DrumGrid';
 import { TransportControls } from '@/components/TransportControls';
@@ -15,19 +15,24 @@ import { useDrumMachine as useDrumMachineControl } from '@/hooks/useDrumMachine'
 function AppContent() {
   const [showOverlay, setShowOverlay] = useState(true);
   const [isStarted, setIsStarted] = useState(false);
-  const { state } = useDrumMachine();
+  const [shouldAutoStart, setShouldAutoStart] = useState(false);
+  const { state, isAudioReady } = useDrumMachine();
   const { start } = useDrumMachineControl();
 
-  // 启动应用并开始播放
-  const handleStart = useCallback(async () => {
+  // 当 isAudioReady 变为 true 且需要自动开始时，启动播放
+  useEffect(() => {
+    if (shouldAutoStart && isAudioReady) {
+      start();
+      setShouldAutoStart(false);
+    }
+  }, [shouldAutoStart, isAudioReady, start]);
+
+  // 启动应用并标记需要自动开始
+  const handleStart = useCallback(() => {
     setIsStarted(true);
     setShowOverlay(false);
-    
-    // 延迟一点后开始播放，让 UI 先渲染
-    setTimeout(() => {
-      start();
-    }, 100);
-  }, [start]);
+    setShouldAutoStart(true);
+  }, []);
 
   return (
     <>
