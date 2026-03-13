@@ -2,14 +2,14 @@
 // justBeat - 主应用组件
 // ============================================
 
-import { useState, useCallback, useEffect } from 'react';
-import { DrumMachineProvider } from '@/context/DrumMachineContext';
-import { DrumGrid } from '@/components/DrumGrid';
-import { TransportControls } from '@/components/TransportControls';
-import { VolumeControl } from '@/components/VolumeControl';
-import { StartOverlay } from '@/components/StartOverlay';
-import { useDrumMachine } from '@/context/DrumMachineContext';
-import { useDrumMachine as useDrumMachineControl } from '@/hooks/useDrumMachine';
+import { useState, useCallback, useEffect } from "react";
+import { DrumMachineProvider } from "@/context/DrumMachineContext";
+import { DrumGrid } from "@/components/DrumGrid";
+import { TransportControls } from "@/components/TransportControls";
+import { VolumeControl } from "@/components/VolumeControl";
+import { StartOverlay } from "@/components/StartOverlay";
+import { useDrumMachine } from "@/context/DrumMachineContext";
+import { useDrumMachine as useDrumMachineControl } from "@/hooks/useDrumMachine";
 
 // 内部组件，使用 hook
 function AppContent() {
@@ -46,9 +46,6 @@ function AppContent() {
             <span className="text-neon-green">just</span>
             <span className="text-white">Beat</span>
           </h1>
-          <p className="text-gray-400 text-sm md:text-base">
-            把焦虑的无鼓金属乐，变成你的力量节拍
-          </p>
         </header>
 
         {/* 主控制面板 */}
@@ -62,7 +59,9 @@ function AppContent() {
                   {state.currentTrack.name}
                 </span>
                 <span className="text-gray-600">|</span>
-                <span className="text-gray-400">{state.currentTrack.bpm} BPM</span>
+                <span className="text-gray-400">
+                  {state.currentTrack.bpm} BPM
+                </span>
               </div>
             </div>
           )}
@@ -76,11 +75,6 @@ function AppContent() {
           {/* 鼓机网格 */}
           <DrumGrid />
         </main>
-
-        {/* 底部说明 */}
-        <footer className="mt-8 text-center text-gray-500 text-xs">
-          <p>点击网格添加鼓点 · 下一循环生效 · 无需音乐理论，即刻创作</p>
-        </footer>
       </div>
     </>
   );

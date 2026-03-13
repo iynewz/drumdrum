@@ -198,6 +198,17 @@
 
 ---
 
+## Phase 10: SEO 优化 (低优先级)
+
+- [ ] 添加 meta 标签（title、description、keywords）
+- [ ] 添加 Open Graph 标签（og:title、og:description、og:image）
+- [ ] 添加 Twitter Card 标签
+- [ ] 准备社交分享预览图（og:image）
+- [ ] 检查页面可访问性（语义化 HTML、aria 标签）
+- [ ] 根据 DataForSEO 分析结果进一步优化
+
+---
+
 ## 使用说明
 
 ### 添加 Backing Track
