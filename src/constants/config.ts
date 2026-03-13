@@ -106,6 +106,61 @@ export const SYNTH_CONFIG: SynthConfig = {
   },
 };
 
+/** 预设 Pattern */
+function stepsToPattern(steps: number[]): boolean[] {
+  const pattern = Array(STEPS).fill(false);
+  steps.forEach(s => { pattern[s] = true; });
+  return pattern;
+}
+
+const EVEN_STEPS = [0, 2, 4, 6, 8, 10, 12, 14];
+const ODD_STEPS = [1, 3, 5, 7, 9, 11, 13, 15];
+
+export interface PresetPattern {
+  id: string;
+  name: string;
+  pattern: DrumPattern;
+}
+
+export const PRESET_PATTERNS: PresetPattern[] = [
+  {
+    id: 'basic-rock',
+    name: 'Basic Rock',
+    pattern: {
+      kick: stepsToPattern([0, 8]),
+      snare: stepsToPattern([4, 12]),
+      hihat: stepsToPattern(EVEN_STEPS),
+    },
+  },
+  {
+    id: 'metal-drive',
+    name: 'Metal Drive',
+    pattern: {
+      kick: stepsToPattern(EVEN_STEPS),
+      snare: stepsToPattern([4, 12]),
+      hihat: stepsToPattern(EVEN_STEPS),
+    },
+  },
+  {
+    id: 'blast-beat',
+    name: 'Blast Beat',
+    pattern: {
+      kick: stepsToPattern(EVEN_STEPS),
+      snare: stepsToPattern(ODD_STEPS),
+      hihat: stepsToPattern(EVEN_STEPS),
+    },
+  },
+  {
+    id: 'syncopated',
+    name: 'Syncopated',
+    pattern: {
+      kick: stepsToPattern([0, 3, 6, 10]),
+      snare: stepsToPattern([4, 12]),
+      hihat: stepsToPattern(EVEN_STEPS),
+    },
+  },
+];
+
 /** 音量默认值 */
 export const DEFAULT_VOLUME = {
   master: -10,  // dB

@@ -57,7 +57,8 @@ export type DrumMachineAction =
   | { type: 'RANDOMIZE' }
   | { type: 'SET_TRACK'; track: BackingTrack }
   | { type: 'SET_GENRE'; genre: Genre; track: BackingTrack }
-  | { type: 'SET_BPM'; bpm: number };
+  | { type: 'SET_BPM'; bpm: number }
+  | { type: 'LOAD_PRESET'; pattern: DrumPattern };
 
 /** 合成器配置 */
 export interface SynthConfig {

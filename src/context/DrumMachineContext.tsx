@@ -10,6 +10,7 @@ import type {
   BackingTrack,
   Genre
 } from '@/types';
+import type { DrumPattern } from '@/types';
 import { DEFAULT_PATTERN, STEPS, DEFAULT_TRACK } from '@/constants/config';
 import { initDrumSynths } from '@/audio/drumSynths';
 import * as Tone from 'tone';
@@ -79,6 +80,16 @@ function drumMachineReducer(state: DrumMachineState, action: DrumMachineAction):
         },
       };
 
+    case 'LOAD_PRESET':
+      return {
+        ...state,
+        pattern: {
+          kick: [...action.pattern.kick],
+          snare: [...action.pattern.snare],
+          hihat: [...action.pattern.hihat],
+        },
+      };
+
     case 'RANDOMIZE': {
       const randomPattern = (density: number): boolean[] =>
         Array(STEPS)
@@ -114,6 +125,7 @@ interface DrumMachineContextType {
   setGenre: (genre: Genre, track: BackingTrack) => void;
   clearAll: () => void;
   randomize: () => void;
+  loadPreset: (pattern: DrumPattern) => void;
   initAudio: () => Promise<void>;
   isAudioReady: boolean;
 }
@@ -175,6 +187,10 @@ export function DrumMachineProvider({ children }: DrumMachineProviderProps) {
     dispatch({ type: 'RANDOMIZE' });
   }, []);
 
+  const loadPreset = useCallback((pattern: DrumPattern) => {
+    dispatch({ type: 'LOAD_PRESET', pattern });
+  }, []);
+
   const value: DrumMachineContextType = {
     state,
     toggleStep,
@@ -185,6 +201,7 @@ export function DrumMachineProvider({ children }: DrumMachineProviderProps) {
     setGenre,
     clearAll,
     randomize,
+    loadPreset,
     initAudio,
     isAudioReady,
   };
