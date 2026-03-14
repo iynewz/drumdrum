@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Iron Rules
+
+- **永远不要自动提交或推送代码**。所有 `git commit` 和 `git push` 操作必须由用户明确指示后才能执行。
+
 ## Project Overview
 
 **justBeat** — a browser-based drum machine built with React + Tone.js. Users toggle drum hits on a 16-step grid (kick, snare, hihat) that plays over looping backing tracks. The app uses synthesized drums (not samples) via Tone.js synths.

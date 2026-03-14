@@ -241,3 +241,23 @@ export const BACKING_TRACKS: BackingTrack[] = [
 *创建日期: 2026-03-04*
 *最后更新: 2026-03-13*
 *当前阶段: Phase 6 (补齐内容)*
+
+
+  对 justBeat 的具体改进建议
+
+  1. 视觉动感（最大提升）
+  - 当前 step 播放时，cell 应该有脉冲发光动画（glow + scale），而不只是变色
+  - 波形可视化：用 Tone.Analyser 实时绘制 backing track 的波形或频谱条（canvas），放在网格上方
+  - 背景微粒/噪点动画，营造"演出现场"氛围
+
+  2. 互动丰富度
+  - 键盘触发：用 Q/W/E 等键直接敲击 kick/snare/hihat，像打真鼓一样即时反馈
+  - 拖拽画 pattern：鼠标按住拖过一排 cell 批量开启，而不是一个个点
+  - Swing / Velocity：给每个 step 加力度控制，长按 cell 可以调节力度
+
+  3. 成就感与反馈
+  - 对比模式：一键 solo/mute backing track，让用户听到"有鼓 vs 无鼓"的对比冲击
+  - 循环计数器：显示"你已经创作了 XX 个循环"，给用户正反馈
+  - 录音导出：把创作录下来导出为音频文件，让用户有可以带走的东西
+
+  你觉得哪些方向最吸引你？我可以优先实现。

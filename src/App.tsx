@@ -10,6 +10,7 @@ import { VolumeControl } from "@/components/VolumeControl";
 import { StartOverlay } from "@/components/StartOverlay";
 import { useDrumMachine } from "@/context/DrumMachineContext";
 import { useDrumMachine as useDrumMachineControl } from "@/hooks/useDrumMachine";
+import { ParticleBackground } from "@/components/ParticleBackground";
 
 // 内部组件，使用 hook
 function AppContent() {
@@ -35,11 +36,14 @@ function AppContent() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen bg-industrial-900">
+      {/* 背景粒子动画 */}
+      <ParticleBackground />
+
       {/* 启动遮罩层 */}
       {showOverlay && <StartOverlay onStart={handleStart} />}
 
-      <div className="min-h-screen bg-industrial-900 text-gray-200 flex flex-col items-center justify-center p-4">
+      <div className="relative z-10 min-h-screen text-gray-200 flex flex-col items-center justify-center p-4">
         {/* 标题 */}
         <header className="mb-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold tracking-wider mb-2">
@@ -76,7 +80,7 @@ function AppContent() {
           <DrumGrid />
         </main>
       </div>
-    </>
+    </div>
   );
 }
 
